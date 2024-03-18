@@ -37,6 +37,7 @@ void Scheduler::fcfsScheduling(){
 	float total = 0;
 	for(auto request: requests){
 		total +=  std::abs(currTrack - request.getTrackNumber());
+		seekSequence.push_back(request.getTrackNumber());
 		currTrack = request.getTrackNumber();
 	}
 
@@ -102,6 +103,11 @@ void Scheduler::results(){
 			break;
 		
 	}
+	std::cout<<"Seek Sequence : ";
+	for(auto seek: seekSequence){
+		std::cout<<seek<<" ";
+	}
+	std::cout<<"\n";
 	std::cout<<"Average Rotational Delay : "<<this->getAvgRotationalDelay()<<" seconds"<<std::endl;
 	std::cout<<"Total Seek Time : "<<this->getTotalSeekTime()<<" seconds"<<std::endl;
 }

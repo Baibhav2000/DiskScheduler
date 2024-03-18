@@ -24,6 +24,7 @@ class Scheduler{
 		SchedulingType schedulingType;			//  Type of Disk scheduling algorithm used
 		float avgRotationalDelay;				//  Average rotational delay of the algorithm
 		float totalSeekTime;					//	Total seek time spent so far
+		std::vector<int> seekSequence;			// Seek Sequence of the scheduling algorithm
 
 		/****************************************************************************************
 		 * @brief Performs FCFS Disk Scheduling
