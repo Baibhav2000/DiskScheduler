@@ -1,6 +1,8 @@
 #include "scheduler.h"
+#include <iostream>
+#include <cmath>
 
-Scheduler::Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, float rpm, float avgSeekTime, int initialHeadPosition, std::vector<Request> &requests, SchedulingType schedulingType){
+Scheduler::Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, float rpm, float avgSeekTime, int initialHeadPosition, std::vector<Request> requests, SchedulingType schedulingType){
 
 		this->cylinderCount = cylinderCount;
 		this->sectorCount = sectorCount;
@@ -10,7 +12,8 @@ Scheduler::Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, f
 		this->initialHeadPosition = initialHeadPosition;
 		this->requests = requests;
 		this->schedulingType = schedulingType;
-
+		this->avgRotationalDelay = 0;
+		this->totalSeekTime = 0;
 }
 
 void Scheduler::setAvgRotationalDelay(float avgRotationalDelay){
@@ -26,11 +29,21 @@ float Scheduler::getTotalSeekTime(){
 }
 
 float Scheduler::getAvgRotationalDelay(){
-	return this->avgSeekTime;
+	return this->avgRotationalDelay;
 }
 
 void Scheduler::fcfsScheduling(){
+	int currTrack = initialHeadPosition;
+	float total = 0;
+	for(auto request: requests){
+		total +=  std::abs(currTrack - request.getTrackNumber());
+		currTrack = request.getTrackNumber();
+	}
 
+	float delay = (1.0f / (2.0f * rpm)) * 60.0f;
+
+	setAvgRotationalDelay(delay);
+	setTotalSeekTime(total);
 }
 
 void Scheduler::lookScheduling(){
@@ -67,4 +80,28 @@ void Scheduler::schedule(){
 		
 	}
 
+}
+
+void Scheduler::results(){
+	switch (this->schedulingType){
+
+		case FCFS:
+			std::cout<<"\n\nFCFS Scheduling Results: \n\n";
+			break;
+
+		case LOOK:
+			std::cout<<"\n\nLOOK Scheduling Results: \n\n";
+			break;
+
+		case C_LOOK:
+			std::cout<<"\n\nC-LOOK Scheduling Results: \n\n";
+			break;
+
+		case SCAN:
+			std::cout<<"\n\nSCAN Scheduling Results: \n\n";
+			break;
+		
+	}
+	std::cout<<"Average Rotational Delay : "<<this->getAvgRotationalDelay()<<" seconds"<<std::endl;
+	std::cout<<"Total Seek Time : "<<this->getTotalSeekTime()<<" seconds"<<std::endl;
 }

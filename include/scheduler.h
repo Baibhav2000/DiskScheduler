@@ -59,7 +59,7 @@ class Scheduler{
 		 * @param[inout] requests Queue of disk requests	
 		 * @param[in]	schedulingType Type of Disk scheduling algorithm used
 		******************************************************************************************/
-		Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, float rpm, float avgSeekTime, int initialHeadPosition, std::vector<Request> &requests, SchedulingType schedulingType);
+		Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, float rpm, float avgSeekTime, int initialHeadPosition, std::vector<Request> requests, SchedulingType schedulingType);
 
 		
 		/***********************************************************

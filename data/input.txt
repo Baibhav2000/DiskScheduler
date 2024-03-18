@@ -1,7 +1,7 @@
-num_cylinders=56
-num_sectors=12
-bytes_per_second=4500
-rpm=360
-avg_seek_time=2.3
-initial_head_position=20
+56
+12
+4500
+360
+2.3
+20
 45,26,30,12,25,32,10
