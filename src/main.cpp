@@ -57,6 +57,10 @@ int main(){
     clookScheduler.schedule();
     clookScheduler.results();
     
+    Scheduler scanScheduler = Scheduler(cylinderCount, sectorCount, bytesPerSecond, rpm, avgSeekTime, initialHeadPosition, requests, SCAN);
+    scanScheduler.schedule();
+    scanScheduler.results();
+    
 
     return 0;
 }

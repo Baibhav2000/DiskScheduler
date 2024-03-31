@@ -101,7 +101,7 @@ void Scheduler::lookScheduling(){
 }
 
 void Scheduler::cLookScheduling(){
-int currTrack = initialHeadPosition;
+	int currTrack = initialHeadPosition;
 	seekSequence.push_back(initialHeadPosition);
 	float total = 0;
 
@@ -152,7 +152,56 @@ int currTrack = initialHeadPosition;
 }
 
 void Scheduler::scanScheduling(){
-	
+	int currTrack = initialHeadPosition;
+	seekSequence.push_back(initialHeadPosition);
+	float total = 0;
+
+	std::string direction = "right";
+
+	std::vector<int> left, right;
+
+	float delay = (1.0f / (2.0f * rpm)) * 60.0f;
+
+	for(auto request: requests){
+		int trackNumber = request.getTrackNumber();
+		if(trackNumber < initialHeadPosition)
+			left.push_back(trackNumber);
+
+		if(trackNumber > initialHeadPosition)
+			right.push_back(trackNumber);
+
+	}
+
+	std::sort(left.begin(), left.end());
+	std::sort(right.begin(), right.end());
+
+	int runs = 2;
+	while(runs > 0){
+		if(direction == "left"){
+			for(int i = 0; i<left.size(); i++){
+				total += std::abs(left[i] - currTrack);
+				seekSequence.push_back(left[i]);
+				currTrack = left[i];
+			}
+
+			direction = "right";
+		}
+		else if(direction == "right"){
+			for(int i = 0; i<right.size(); i++){
+				total += std::abs(right[i] - currTrack);
+				seekSequence.push_back(right[i]);
+				currTrack = right[i];
+			}
+			total += std::abs(currTrack - cylinderCount);
+			seekSequence.push_back(cylinderCount-1);
+			currTrack = cylinderCount - 1;
+			direction = "left";
+		}
+		runs--;
+	}
+
+	setAvgRotationalDelay(delay);
+	setTotalSeekTime(total);
 }
 
 void Scheduler::schedule(){
