@@ -53,6 +53,10 @@ int main(){
     lookScheduler.schedule();
     lookScheduler.results();
     
+    Scheduler clookScheduler = Scheduler(cylinderCount, sectorCount, bytesPerSecond, rpm, avgSeekTime, initialHeadPosition, requests, C_LOOK);
+    clookScheduler.schedule();
+    clookScheduler.results();
+    
 
     return 0;
 }
