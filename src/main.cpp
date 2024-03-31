@@ -49,6 +49,9 @@ int main(){
     fcfsScheduler.schedule();
     fcfsScheduler.results();
 
+    Scheduler lookScheduler = Scheduler(cylinderCount, sectorCount, bytesPerSecond, rpm, avgSeekTime, initialHeadPosition, requests, LOOK);
+    lookScheduler.schedule();
+    lookScheduler.results();
     
 
     return 0;
