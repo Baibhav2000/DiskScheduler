@@ -27,7 +27,7 @@ int main(){
 
     inputFile >> cylinderCount >> sectorCount >> bytesPerSecond >> rpm >> avgSeekTime >> initialHeadPosition >> trackRequests;
 
-    getline(inputFile, trackRequests);
+    // getline(inputFile, trackRequests);
     
     inputFile.close();
 

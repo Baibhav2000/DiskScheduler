@@ -179,7 +179,7 @@ void Scheduler::scanScheduling(){
 	int runs = 2;
 	while(runs > 0){
 		if(direction == "left"){
-			for(int i = 0; i<left.size(); i++){
+			for(int i = left.size()-1; i>-1; i--){
 				total += std::abs(left[i] - currTrack);
 				seekSequence.push_back(left[i]);
 				currTrack = left[i];
