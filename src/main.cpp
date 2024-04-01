@@ -65,6 +65,9 @@ int main(){
     cScanScheduler.schedule();
     cScanScheduler.results();
     
+    Scheduler sstfScheduler = Scheduler(cylinderCount, sectorCount, bytesPerSecond, rpm, avgSeekTime, initialHeadPosition, requests, SSTF);
+    sstfScheduler.schedule();
+    sstfScheduler.results();    
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <climits>
 
 Scheduler::Scheduler(int cylinderCount, int sectorCount, float bytesPerSecond, float rpm, float avgSeekTime, int initialHeadPosition, std::vector<Request> requests, SchedulingType schedulingType){
 
@@ -260,6 +261,49 @@ void Scheduler::cScanScheduling(){
 	setTotalSeekTime(total);
 }
 
+int findNextTrack(int currTrack, std::vector<Request> &requests, std::vector<bool> &served){
+    int minAbsoluteDiff = INT_MAX;
+    
+    int nextTrack, nextTrackId;
+
+    for(auto request: requests){
+        int requestedTrack = request.getTrackNumber();
+        int requestedTrackId = request.getRequestId();
+
+        int diff = std::abs(currTrack - requestedTrack);
+        if(diff < minAbsoluteDiff && !served[requestedTrackId]){
+            minAbsoluteDiff = diff;
+            nextTrack = requestedTrack;
+            nextTrackId = requestedTrackId;
+        }
+    }
+
+    if(minAbsoluteDiff == INT_MAX)
+        return -1;
+
+    served[nextTrackId] = true;
+    return nextTrack;
+}
+
+void Scheduler::sstfScheduling(){
+    std::vector<bool> served(requests.size(), false);
+    
+    int currTrack = initialHeadPosition;
+    int nextTrack = findNextTrack(currTrack, requests, served);
+
+    seekSequence.push_back(currTrack);
+    int total = 0;
+    while(nextTrack != -1){
+        total += std::abs(currTrack - nextTrack);
+        seekSequence.push_back(nextTrack);
+        currTrack = nextTrack;
+         nextTrack = findNextTrack(currTrack, requests, served);
+    }
+    float delay = (1.0f / (2.0f * rpm)) * 60.0f;
+    setTotalSeekTime(total);
+    setAvgRotationalDelay(delay);
+}
+
 void Scheduler::schedule(){
 
 	switch (this->schedulingType){
@@ -283,6 +327,10 @@ void Scheduler::schedule(){
         case C_SCAN:
 			this->cScanScheduling();
 			break;
+
+        case SSTF:
+            this->sstfScheduling();
+            break;
 		
 	}
 
@@ -309,6 +357,10 @@ void Scheduler::results(){
 		
         case C_SCAN:
 			std::cout<<"\n\nC-SCAN Scheduling Results: \n\n";
+			break;
+        
+        case SSTF:
+			std::cout<<"\n\nSSTF Scheduling Results: \n\n";
 			break;
 		
 	}
