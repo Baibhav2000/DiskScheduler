@@ -61,6 +61,10 @@ int main(){
     scanScheduler.schedule();
     scanScheduler.results();
     
+    Scheduler cScanScheduler = Scheduler(cylinderCount, sectorCount, bytesPerSecond, rpm, avgSeekTime, initialHeadPosition, requests, C_SCAN);
+    cScanScheduler.schedule();
+    cScanScheduler.results();
+    
 
     return 0;
 }

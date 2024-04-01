@@ -204,6 +204,62 @@ void Scheduler::scanScheduling(){
 	setTotalSeekTime(total);
 }
 
+void Scheduler::cScanScheduling(){
+    int currTrack = initialHeadPosition;
+	seekSequence.push_back(initialHeadPosition);
+	float total = 0;
+
+	std::string direction = "right";
+
+	std::vector<int> left, right;
+
+	float delay = (1.0f / (2.0f * rpm)) * 60.0f;
+
+	for(auto request: requests){
+		int trackNumber = request.getTrackNumber();
+		if(trackNumber < initialHeadPosition)
+			left.push_back(trackNumber);
+
+		if(trackNumber > initialHeadPosition)
+			right.push_back(trackNumber);
+
+	}
+
+	std::sort(left.begin(), left.end());
+	std::sort(right.begin(), right.end());
+
+	int runs = 2;
+	while(runs > 0){
+		if(direction == "left"){
+			for(int i = 0; i<left.size(); i++){
+				total += std::abs(left[i] - currTrack);
+				seekSequence.push_back(left[i]);
+				currTrack = left[i];
+			}
+
+			direction = "right";
+		}
+		else if(direction == "right"){
+			for(int i = 0; i<right.size(); i++){
+				total += std::abs(right[i] - currTrack);
+				seekSequence.push_back(right[i]);
+				currTrack = right[i];
+			}
+			total += std::abs(currTrack - cylinderCount);
+			seekSequence.push_back(cylinderCount-1);
+			currTrack = cylinderCount - 1;
+            total += std::abs(currTrack - 0);
+            seekSequence.push_back(0);
+			currTrack = 0;
+			direction = "left";
+		}
+		runs--;
+	}
+
+	setAvgRotationalDelay(delay);
+	setTotalSeekTime(total);
+}
+
 void Scheduler::schedule(){
 
 	switch (this->schedulingType){
@@ -222,6 +278,10 @@ void Scheduler::schedule(){
 
 		case SCAN:
 			this->scanScheduling();
+			break;
+		
+        case C_SCAN:
+			this->cScanScheduling();
 			break;
 		
 	}
@@ -245,6 +305,10 @@ void Scheduler::results(){
 
 		case SCAN:
 			std::cout<<"\n\nSCAN Scheduling Results: \n\n";
+			break;
+		
+        case C_SCAN:
+			std::cout<<"\n\nC-SCAN Scheduling Results: \n\n";
 			break;
 		
 	}
